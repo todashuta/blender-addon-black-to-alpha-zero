@@ -23,7 +23,7 @@ import bpy
 bl_info = {
     "name": "Black to Alpha Zero",
     "author": "todashuta",
-    "version": (1, 0, 0),
+    "version": (1, 1, 0),
     "blender": (2, 80, 0),
     "location": "Image Editor > Sidebar > Tool > Black to Alpha Zero",
     "description": "",
@@ -47,22 +47,41 @@ class BLACK_TO_ALPHA_ZERO_OT_main(bpy.types.Operator):
         #            print("active", area.spaces.active.image)
         #            print("ctx", context.space_data.image)
         #            return True
-        if hasattr(context.space_data, "image"):
-            if context.space_data.image is not None:
-                return True
-        return False
+        scene = context.scene
+        use_another_image = scene.black_to_alpha_zero_use_another_image
+        mask_source_imagename = scene.black_to_alpha_zero_mask_source_imagename
+        if not hasattr(context.space_data, "image"):
+            return False
+        if context.space_data.image is None:
+            return False
+        if use_another_image:
+            if mask_source_imagename not in bpy.data.images:
+                return False
+            target_image = context.space_data.image
+            mask_source_image = bpy.data.images[mask_source_imagename]
+            if target_image.size[:] != mask_source_image.size[:]:
+                return False
+        return True
 
     def execute(self, context):
-        image = context.space_data.image
-        width, height = image.size
-        pxs = list(image.pixels[:])
+        scene = context.scene
+        target_image = context.space_data.image
+
+        if scene.black_to_alpha_zero_use_another_image:
+            mask_source_image = bpy.data.images[scene.black_to_alpha_zero_mask_source_imagename]
+        else:
+            mask_source_image = target_image
+
+        width, height = target_image.size
+        target_image_pxs = list(target_image.pixels[:])
+        mask_source_image_pxs = list(mask_source_image.pixels[:])
 
         for i in range(0, width*height*4, 4):
-            r, g, b = pxs[i], pxs[i+1], pxs[i+2]
+            r, g, b = mask_source_image_pxs[i], mask_source_image_pxs[i+1], mask_source_image_pxs[i+2]
             if r == 0 and g == 0 and b == 0:
-                pxs[i+3] = 0  # Alpha
+                target_image_pxs[i+3] = 0  # Alpha
 
-        image.pixels = pxs
+        target_image.pixels = target_image_pxs
 
         return {"FINISHED"}
 
@@ -74,22 +93,39 @@ class BLACK_TO_ALPHA_ZERO_PT_panel(bpy.types.Panel):
     bl_category = "Tool"
 
     def draw(self, context):
+        scene = context.scene
         layout = self.layout
+        layout.prop(scene, "black_to_alpha_zero_use_another_image")
+        row = layout.row()
+        row.enabled = scene.black_to_alpha_zero_use_another_image
+        row.prop_search(scene, "black_to_alpha_zero_mask_source_imagename", bpy.data, "images", text="")
         layout.operator(BLACK_TO_ALPHA_ZERO_OT_main.bl_idname)
 
 
 classes = [
-    BLACK_TO_ALPHA_ZERO_OT_main,
-    BLACK_TO_ALPHA_ZERO_PT_panel,
+        BLACK_TO_ALPHA_ZERO_OT_main,
+        BLACK_TO_ALPHA_ZERO_PT_panel,
 ]
+
+scene_props = {
+        "black_to_alpha_zero_mask_source_imagename": bpy.props.StringProperty(name="Mask Source Image", default="", description=""),
+        "black_to_alpha_zero_use_another_image": bpy.props.BoolProperty(name="Use Another Image as a Mask", default=False, description=""),
+}
 
 
 def register():
     for c in classes:
         bpy.utils.register_class(c)
 
+    for name, prop in scene_props.items():
+        setattr(bpy.types.Scene, name, prop)
+
 
 def unregister():
+    for name, prop in scene_props.items():
+        if hasattr(bpy.types.Scene, name):
+            delattr(bpy.types.Scene, name)
+
     for c in classes:
         bpy.utils.unregister_class(c)
 
