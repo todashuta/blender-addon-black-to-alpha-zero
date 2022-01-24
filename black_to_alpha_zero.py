@@ -23,7 +23,7 @@ import bpy
 bl_info = {
     "name": "Black to Alpha Zero",
     "author": "todashuta",
-    "version": (1, 1, 0),
+    "version": (1, 1, 1),
     "blender": (2, 80, 0),
     "location": "Image Editor > Sidebar > Tool > Black to Alpha Zero",
     "description": "",
@@ -77,7 +77,9 @@ class BLACK_TO_ALPHA_ZERO_OT_main(bpy.types.Operator):
         mask_source_image_pxs = list(mask_source_image.pixels[:])
 
         for i in range(0, width*height*4, 4):
-            r, g, b = mask_source_image_pxs[i], mask_source_image_pxs[i+1], mask_source_image_pxs[i+2]
+            r = mask_source_image_pxs[i+0]
+            g = mask_source_image_pxs[i+1]
+            b = mask_source_image_pxs[i+2]
             if r == 0 and g == 0 and b == 0:
                 target_image_pxs[i+3] = 0  # Alpha
 
