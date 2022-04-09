@@ -23,7 +23,7 @@ import bpy
 bl_info = {
     "name": "Black to Alpha Zero",
     "author": "todashuta",
-    "version": (1, 1, 1),
+    "version": (1, 1, 2),
     "blender": (2, 80, 0),
     "location": "Image Editor > Sidebar > Tool > Black to Alpha Zero",
     "description": "",
@@ -104,10 +104,10 @@ class BLACK_TO_ALPHA_ZERO_PT_panel(bpy.types.Panel):
         layout.operator(BLACK_TO_ALPHA_ZERO_OT_main.bl_idname)
 
 
-classes = [
+classes = (
         BLACK_TO_ALPHA_ZERO_OT_main,
         BLACK_TO_ALPHA_ZERO_PT_panel,
-]
+)
 
 scene_props = {
         "black_to_alpha_zero_mask_source_imagename": bpy.props.StringProperty(name="Mask Source Image", default="", description=""),
@@ -124,7 +124,7 @@ def register():
 
 
 def unregister():
-    for name, prop in scene_props.items():
+    for name in scene_props.keys():
         if hasattr(bpy.types.Scene, name):
             delattr(bpy.types.Scene, name)
 
