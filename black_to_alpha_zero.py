@@ -23,7 +23,7 @@ import bpy
 bl_info = {
     "name": "Black to Alpha Zero",
     "author": "todashuta",
-    "version": (1, 1, 2),
+    "version": (1, 1, 3),
     "blender": (2, 80, 0),
     "location": "Image Editor > Sidebar > Tool > Black to Alpha Zero",
     "description": "",
@@ -84,6 +84,7 @@ class BLACK_TO_ALPHA_ZERO_OT_main(bpy.types.Operator):
                 target_image_pxs[i+3] = 0  # Alpha
 
         target_image.pixels = target_image_pxs
+        target_image.update()
 
         return {"FINISHED"}
 
