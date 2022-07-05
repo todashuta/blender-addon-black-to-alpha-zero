@@ -18,12 +18,13 @@
 
 
 import bpy
+import numpy as np
 
 
 bl_info = {
     "name": "Black to Alpha Zero",
     "author": "todashuta",
-    "version": (1, 1, 3),
+    "version": (1, 2, 0),
     "blender": (2, 80, 0),
     "location": "Image Editor > Sidebar > Tool > Black to Alpha Zero",
     "description": "",
@@ -73,17 +74,22 @@ class BLACK_TO_ALPHA_ZERO_OT_main(bpy.types.Operator):
             mask_source_image = target_image
 
         width, height = target_image.size
-        target_image_pxs = list(target_image.pixels[:])
-        mask_source_image_pxs = list(mask_source_image.pixels[:])
+        target_image_pixel_data = np.zeros((width, height, 4), "f")
+        mask_source_pixel_data = np.zeros((width, height, 4), "f")
 
-        for i in range(0, width*height*4, 4):
-            r = mask_source_image_pxs[i+0]
-            g = mask_source_image_pxs[i+1]
-            b = mask_source_image_pxs[i+2]
-            if r == 0 and g == 0 and b == 0:
-                target_image_pxs[i+3] = 0  # Alpha
+        target_image.pixels.foreach_get(target_image_pixel_data.ravel())
+        mask_source_image.pixels.foreach_get(mask_source_pixel_data.ravel())
 
-        target_image.pixels = target_image_pxs
+        R = mask_source_pixel_data[:,:,0]
+        G = mask_source_pixel_data[:,:,1]
+        B = mask_source_pixel_data[:,:,2]
+        A = mask_source_pixel_data[:,:,3]
+
+        A[np.where((R == 0) & (G == 0) & (B == 0))] = 0
+
+        target_image_pixel_data[:,:,3] = A
+
+        target_image.pixels.foreach_set(target_image_pixel_data.ravel())
         target_image.update()
 
         return {"FINISHED"}
