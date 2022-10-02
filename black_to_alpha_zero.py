@@ -41,7 +41,7 @@ class BLACK_TO_ALPHA_ZERO_OT_main(bpy.types.Operator):
     bl_description = "Black to Alpha Zero"
 
     @classmethod
-    def poll(cls, context):
+    def poll(cls, context: bpy.types.Context) -> bool:
         #for area in context.screen.areas:
         #    if area.type == "IMAGE_EDITOR":
         #        if area.spaces.active.image is not None:
@@ -64,7 +64,7 @@ class BLACK_TO_ALPHA_ZERO_OT_main(bpy.types.Operator):
                 return False
         return True
 
-    def execute(self, context):
+    def execute(self, context: bpy.types.Context) -> set[str]:
         scene = context.scene
         target_image = context.space_data.image
 
@@ -101,7 +101,7 @@ class BLACK_TO_ALPHA_ZERO_PT_panel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_category = "Tool"
 
-    def draw(self, context):
+    def draw(self, context: bpy.types.Context):
         scene = context.scene
         layout = self.layout
         layout.prop(scene, "black_to_alpha_zero_use_another_image")
