@@ -1,0 +1,10 @@
+fake-bpy-module-2.93
+
+numpy==1.19.5
+
+python-lsp-server[all]
+pylsp-mypy
+
+Sphinx
+sphinx-autobuild
+sphinx-rtd-theme
