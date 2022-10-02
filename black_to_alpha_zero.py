@@ -24,8 +24,8 @@ import numpy as np
 bl_info = {
     "name": "Black to Alpha Zero",
     "author": "todashuta",
-    "version": (1, 2, 0),
-    "blender": (2, 80, 0),
+    "version": (1, 2, 1),
+    "blender": (2, 93, 0),  # Python 3.9
     "location": "Image Editor > Sidebar > Tool > Black to Alpha Zero",
     "description": "",
     "warning": "",
