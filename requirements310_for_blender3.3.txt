@@ -1,5 +1,4 @@
-# FIXME
-fake-bpy-module-3.2
+fake-bpy-module-3.3
 
 numpy==1.22.0
 
