@@ -1,10 +1,13 @@
 fake-bpy-module-2.93
 
+# same version of numpy bundled with Blender 2.93
 numpy==1.19.5
 
+# language server
 python-lsp-server[all]
 pylsp-mypy
 
+# for documentation
 Sphinx
 sphinx-autobuild
 sphinx-rtd-theme
